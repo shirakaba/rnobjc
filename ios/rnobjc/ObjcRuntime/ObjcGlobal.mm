@@ -1,17 +1,13 @@
 #import "ObjcGlobal.h"
 #import <React/RCTBridge+Private.h>
-#import <React/RCTUtils.h>
 #import <iostream>
 #import <stdio.h>
-
-#define UNUSED(x) (void)(x)
 
 using namespace facebook;
 
 @implementation ObjcGlobal
 
 @synthesize bridge = _bridge;
-@synthesize methodQueue = _methodQueue;
 
 RCT_EXPORT_MODULE()
 
@@ -21,8 +17,9 @@ RCT_EXPORT_MODULE()
 
 // The installation lifecycle
 - (void)setBridge:(RCTBridge *)bridge {
+  // Grab a reference to the bridge to use later, during the
+  // "invalidate" lifecycle.
   _bridge = bridge;
-  _setBridgeOnMainQueue = RCTIsMainQueue();
 
   RCTCxxBridge *cxxBridge = (RCTCxxBridge*)self.bridge;
   jsi::Runtime *runtime = (jsi::Runtime*)cxxBridge.runtime;
@@ -30,11 +27,14 @@ RCT_EXPORT_MODULE()
     return;
   }
 
-  std::cout << "Installing objc global\n";
+  // Write a console log
+  std::cout << "Installing our JSI module!\n";
   
-  NSString *objcString = [NSString stringWithFormat:@"Hello, from Obj-C++!"];
-  jsi::String jsiString = jsi::String::createFromUtf8(*runtime, objcString.UTF8String);
+  // Create a JSI string from a C string
+  jsi::String jsiString = jsi::String::createFromUtf8(*runtime, "A C string!");
   
+  // Set a property named "objc" on the global object,
+  // taking the JSI string as its value.
   runtime->global().setProperty(*runtime, "objc", jsiString);
 }
 
@@ -46,6 +46,8 @@ RCT_EXPORT_MODULE()
     return;
   }
   
+  // Overwrite the "objc" property on the global object
+  // with `undefined`.
   runtime->global().setProperty(*runtime, "objc", jsi::Value::undefined());
 }
 
