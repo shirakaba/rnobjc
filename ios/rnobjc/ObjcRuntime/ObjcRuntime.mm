@@ -1,10 +1,10 @@
-#import "ObjcGlobal.h"
+#import "ObjcRuntime.h"
 #import <React/RCTBridge+Private.h>
 #import <jsi/jsi.h>
 
 using namespace facebook;
 
-@implementation ObjcGlobal
+@implementation ObjcRuntime
 
 @synthesize bridge = _bridge;
 

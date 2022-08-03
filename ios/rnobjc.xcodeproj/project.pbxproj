@@ -13,7 +13,7 @@
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		7699B88040F8A987B510C191 /* libPods-rnobjc-rnobjcTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 19F6CBCC0A4E27FBF8BF4A61 /* libPods-rnobjc-rnobjcTests.a */; };
-		7D315A7928969A8D00996ACB /* ObjcGlobal.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7D315A7728969A8D00996ACB /* ObjcGlobal.mm */; };
+		7D315A7928969A8D00996ACB /* ObjcRuntime.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7D315A7728969A8D00996ACB /* ObjcRuntime.mm */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 /* End PBXBuildFile section */
 
@@ -42,8 +42,8 @@
 		5709B34CF0A7D63546082F79 /* Pods-rnobjc.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-rnobjc.release.xcconfig"; path = "Target Support Files/Pods-rnobjc/Pods-rnobjc.release.xcconfig"; sourceTree = "<group>"; };
 		5B7EB9410499542E8C5724F5 /* Pods-rnobjc-rnobjcTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-rnobjc-rnobjcTests.debug.xcconfig"; path = "Target Support Files/Pods-rnobjc-rnobjcTests/Pods-rnobjc-rnobjcTests.debug.xcconfig"; sourceTree = "<group>"; };
 		5DCACB8F33CDC322A6C60F78 /* libPods-rnobjc.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-rnobjc.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		7D315A7728969A8D00996ACB /* ObjcGlobal.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ObjcGlobal.mm; sourceTree = "<group>"; };
-		7D315A7828969A8D00996ACB /* ObjcGlobal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ObjcGlobal.h; sourceTree = "<group>"; };
+		7D315A7728969A8D00996ACB /* ObjcRuntime.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ObjcRuntime.mm; sourceTree = "<group>"; };
+		7D315A7828969A8D00996ACB /* ObjcRuntime.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ObjcRuntime.h; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = rnobjc/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		89C6BE57DB24E9ADA2F236DE /* Pods-rnobjc-rnobjcTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-rnobjc-rnobjcTests.release.xcconfig"; path = "Target Support Files/Pods-rnobjc-rnobjcTests/Pods-rnobjc-rnobjcTests.release.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
@@ -113,8 +113,8 @@
 		7D315A7628969A8D00996ACB /* ObjcRuntime */ = {
 			isa = PBXGroup;
 			children = (
-				7D315A7728969A8D00996ACB /* ObjcGlobal.mm */,
-				7D315A7828969A8D00996ACB /* ObjcGlobal.h */,
+				7D315A7728969A8D00996ACB /* ObjcRuntime.mm */,
+				7D315A7828969A8D00996ACB /* ObjcRuntime.h */,
 			);
 			name = ObjcRuntime;
 			path = rnobjc/ObjcRuntime;
@@ -427,7 +427,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */,
-				7D315A7928969A8D00996ACB /* ObjcGlobal.mm in Sources */,
+				7D315A7928969A8D00996ACB /* ObjcRuntime.mm in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
