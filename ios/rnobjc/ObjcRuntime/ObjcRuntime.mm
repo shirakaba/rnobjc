@@ -1,4 +1,5 @@
 #import "ObjcRuntime.h"
+#import "HostObjectObjc.h"
 #import <React/RCTBridge+Private.h>
 #import <jsi/jsi.h>
 
@@ -28,17 +29,13 @@ RCT_EXPORT_MODULE()
   
 //  // To break the build with a useless error message:
 //  NSLog(@"value as number 2 %f", jsi::Value([NSNumber numberWithDouble:3.1415926]).asNumber());
-  
-//  auto add = [] (jsi::Runtime& runtime, const jsi::Value& thisValue, const jsi::Value* arguments, size_t count) -> jsi::Value {
-//    return jsi::Value(arguments[0].asNumber() + arguments[1].asNumber());
-//  };
-//  jsi::Function::createFromHostFunction(*runtime, jsi::PropNameID::forAscii(*runtime, "add"), 2, add);
-  
-  // Create a JSI string from a C string.
-  jsi::String jsiString = jsi::String::createFromUtf8(*runtime, "A C string!");
 
   // Set global.objc = jsiString.
-  runtime->global().setProperty(*runtime, "objc", jsi::Object::createFromHostObject(*runtime, std::make_shared<jsi::HostObject>()));
+  runtime->global().setProperty(
+    *runtime,
+    "objc",
+    jsi::Object::createFromHostObject(*runtime, std::make_shared<HostObjectObjc>())
+  );
 }
 
 // The cleanup lifecycle
