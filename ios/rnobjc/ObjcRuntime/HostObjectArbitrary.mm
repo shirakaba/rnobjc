@@ -1,5 +1,3 @@
-#import <stdio.h>
-#import <stdlib.h>
 #import "HostObjectArbitrary.h"
 #import <jsi/jsi.h>
 #import <Foundation/Foundation.h>
