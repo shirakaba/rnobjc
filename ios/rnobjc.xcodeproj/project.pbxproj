@@ -15,6 +15,7 @@
 		7699B88040F8A987B510C191 /* libPods-rnobjc-rnobjcTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 19F6CBCC0A4E27FBF8BF4A61 /* libPods-rnobjc-rnobjcTests.a */; };
 		7D85ADAA289A63DE00B19FDA /* ObjcRuntime.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7D85ADA9289A63DE00B19FDA /* ObjcRuntime.mm */; };
 		7D85ADAD289A65E000B19FDA /* HostObjectObjc.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7D85ADAB289A65E000B19FDA /* HostObjectObjc.mm */; };
+		7D8F3D75289F5AA800BA29C8 /* HostObjectArbitrary.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7D8F3D74289F5AA800BA29C8 /* HostObjectArbitrary.mm */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 /* End PBXBuildFile section */
 
@@ -47,6 +48,8 @@
 		7D85ADA9289A63DE00B19FDA /* ObjcRuntime.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ObjcRuntime.mm; sourceTree = "<group>"; };
 		7D85ADAB289A65E000B19FDA /* HostObjectObjc.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = HostObjectObjc.mm; sourceTree = "<group>"; };
 		7D85ADAC289A65E000B19FDA /* HostObjectObjc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HostObjectObjc.h; sourceTree = "<group>"; };
+		7D8F3D73289F5AA800BA29C8 /* HostObjectArbitrary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HostObjectArbitrary.h; sourceTree = "<group>"; };
+		7D8F3D74289F5AA800BA29C8 /* HostObjectArbitrary.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = HostObjectArbitrary.mm; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = rnobjc/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		89C6BE57DB24E9ADA2F236DE /* Pods-rnobjc-rnobjcTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-rnobjc-rnobjcTests.release.xcconfig"; path = "Target Support Files/Pods-rnobjc-rnobjcTests/Pods-rnobjc-rnobjcTests.release.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
@@ -116,6 +119,8 @@
 		7D85ADA7289A63DE00B19FDA /* ObjcRuntime */ = {
 			isa = PBXGroup;
 			children = (
+				7D8F3D73289F5AA800BA29C8 /* HostObjectArbitrary.h */,
+				7D8F3D74289F5AA800BA29C8 /* HostObjectArbitrary.mm */,
 				7D85ADAC289A65E000B19FDA /* HostObjectObjc.h */,
 				7D85ADAB289A65E000B19FDA /* HostObjectObjc.mm */,
 				7D85ADA8289A63DE00B19FDA /* ObjcRuntime.h */,
@@ -435,6 +440,7 @@
 				13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */,
 				7D85ADAA289A63DE00B19FDA /* ObjcRuntime.mm in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
+				7D8F3D75289F5AA800BA29C8 /* HostObjectArbitrary.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
