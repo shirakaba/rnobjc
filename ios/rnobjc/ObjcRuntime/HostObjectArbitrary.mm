@@ -60,6 +60,10 @@ jsi::Value HostObjectArbitrary::get(jsi::Runtime& rt, const jsi::PropNameID& pro
     return jsi::Value::undefined();
   }
   
+  SEL sel = NSSelectorFromString([NSString stringWithUTF8String:name.c_str()]);
+  if([(__bridge NSObject *)m_nativeRef respondsToSelector:sel]){
+    return invokeMethod(rt, name, sel);
+  }
   
   
   return jsi::Value::undefined();
@@ -67,6 +71,10 @@ jsi::Value HostObjectArbitrary::get(jsi::Runtime& rt, const jsi::PropNameID& pro
 
 void HostObjectArbitrary::set(jsi::Runtime& runtime, const jsi::PropNameID& propName, const jsi::Value& value) {
 //  auto name = propName.utf8(runtime);
+}
+
+jsi::Function HostObjectArbitrary::invokeMethod(jsi::Runtime &runtime, std::string methodName, SEL sel) {
+  
 }
 
 // Returns the list of keys.
