@@ -44,7 +44,7 @@ jsi::Value HostObjectArbitrary::get(jsi::Runtime& rt, const jsi::PropNameID& pro
   
   if(name == "Symbol.toStringTag"){
     // Handles: console.log(hostObjectArbitrary.NSString);
-    return jsi::String::createFromAscii(rt, "[object HostObjectClassInstance]");
+    return jsi::String::createFromAscii(rt, "[object HostObjectArbitrary]");
   }
   
   // Runtime type encodings:
