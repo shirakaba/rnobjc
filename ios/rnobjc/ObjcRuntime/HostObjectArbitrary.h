@@ -3,9 +3,10 @@
 using namespace facebook;
 
 enum HostObjectArbitraryType {
+  OTHER,
+  CLASS,
   CLASS_INSTANCE,
 //  SERIALISABLE,
-  OTHER,
 };
 
 class JSI_EXPORT HostObjectArbitrary: public jsi::HostObject {

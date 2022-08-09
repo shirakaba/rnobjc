@@ -1,5 +1,6 @@
 #import "HostObjectArbitrary.h"
 #import <jsi/jsi.h>
+#import <objc/runtime.h>
 #import <Foundation/Foundation.h>
 
 // The constructor
@@ -7,7 +8,9 @@ HostObjectArbitrary::HostObjectArbitrary(void *nativeRef)
 : m_nativeRef(nativeRef) {
   @try {
     if([(__bridge NSObject *)m_nativeRef isKindOfClass:[NSObject class]]){
-      m_type = HostObjectArbitraryType::CLASS_INSTANCE;
+      m_type = class_isMetaClass(object_getClass((__bridge NSObject *)m_nativeRef)) ?
+        HostObjectArbitraryType::CLASS :
+        HostObjectArbitraryType::CLASS_INSTANCE;
       return;
     }
   }
@@ -34,8 +37,13 @@ jsi::Value HostObjectArbitrary::get(jsi::Runtime& rt, const jsi::PropNameID& pro
     );
   }
   
+  if(name == "$$typeof"){
+    // Handles console.log(hostObjectArbitrary);
+    return jsi::Value::undefined();
+  }
+  
   if(name == "Symbol.toStringTag"){
-    // Handles: console.log('arbitrary.NSString:', arbitrary.NSString);
+    // Handles: console.log(hostObjectArbitrary.NSString);
     return jsi::String::createFromAscii(rt, "[object HostObjectClassInstance]");
   }
   

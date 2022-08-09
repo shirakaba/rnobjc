@@ -1,4 +1,5 @@
 #import "HostObjectObjc.h"
+#import "HostObjectArbitrary.h"
 #import <jsi/jsi.h>
 #import <Foundation/Foundation.h>
 
@@ -20,6 +21,11 @@ jsi::Value HostObjectObjc::get(jsi::Runtime& rt, const jsi::PropNameID& propName
   
   if (name == "NSStringTransformLatinToHiragana"){
     return jsi::String::createFromUtf8(rt, NSStringTransformLatinToHiragana.UTF8String);
+  }
+  
+  if (name == "NSString"){
+    // return jsi::Object::createFromHostObject(rt, std::make_unique<HostObjectArbitrary>((__bridge void *)[NSString class]));
+    return jsi::Object::createFromHostObject(rt, std::make_unique<HostObjectArbitrary>((__bridge void *)[[NSString alloc] init]));
   }
   
   return jsi::Value::undefined();
