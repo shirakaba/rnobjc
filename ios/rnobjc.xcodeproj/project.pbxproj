@@ -13,6 +13,7 @@
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		7699B88040F8A987B510C191 /* libPods-rnobjc-rnobjcTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 19F6CBCC0A4E27FBF8BF4A61 /* libPods-rnobjc-rnobjcTests.a */; };
+		7D3208C628A33F130014A885 /* JSIUtils.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7D3208C428A33F130014A885 /* JSIUtils.mm */; };
 		7D85ADAA289A63DE00B19FDA /* ObjcRuntime.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7D85ADA9289A63DE00B19FDA /* ObjcRuntime.mm */; };
 		7D85ADAD289A65E000B19FDA /* HostObjectObjc.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7D85ADAB289A65E000B19FDA /* HostObjectObjc.mm */; };
 		7D8F3D75289F5AA800BA29C8 /* HostObjectArbitrary.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7D8F3D74289F5AA800BA29C8 /* HostObjectArbitrary.mm */; };
@@ -44,6 +45,8 @@
 		5709B34CF0A7D63546082F79 /* Pods-rnobjc.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-rnobjc.release.xcconfig"; path = "Target Support Files/Pods-rnobjc/Pods-rnobjc.release.xcconfig"; sourceTree = "<group>"; };
 		5B7EB9410499542E8C5724F5 /* Pods-rnobjc-rnobjcTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-rnobjc-rnobjcTests.debug.xcconfig"; path = "Target Support Files/Pods-rnobjc-rnobjcTests/Pods-rnobjc-rnobjcTests.debug.xcconfig"; sourceTree = "<group>"; };
 		5DCACB8F33CDC322A6C60F78 /* libPods-rnobjc.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-rnobjc.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		7D3208C428A33F130014A885 /* JSIUtils.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = JSIUtils.mm; sourceTree = "<group>"; };
+		7D3208C528A33F130014A885 /* JSIUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSIUtils.h; sourceTree = "<group>"; };
 		7D85ADA8289A63DE00B19FDA /* ObjcRuntime.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ObjcRuntime.h; sourceTree = "<group>"; };
 		7D85ADA9289A63DE00B19FDA /* ObjcRuntime.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ObjcRuntime.mm; sourceTree = "<group>"; };
 		7D85ADAB289A65E000B19FDA /* HostObjectObjc.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = HostObjectObjc.mm; sourceTree = "<group>"; };
@@ -119,6 +122,8 @@
 		7D85ADA7289A63DE00B19FDA /* ObjcRuntime */ = {
 			isa = PBXGroup;
 			children = (
+				7D3208C528A33F130014A885 /* JSIUtils.h */,
+				7D3208C428A33F130014A885 /* JSIUtils.mm */,
 				7D8F3D73289F5AA800BA29C8 /* HostObjectArbitrary.h */,
 				7D8F3D74289F5AA800BA29C8 /* HostObjectArbitrary.mm */,
 				7D85ADAC289A65E000B19FDA /* HostObjectObjc.h */,
@@ -438,6 +443,7 @@
 			files = (
 				7D85ADAD289A65E000B19FDA /* HostObjectObjc.mm in Sources */,
 				13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */,
+				7D3208C628A33F130014A885 /* JSIUtils.mm in Sources */,
 				7D85ADAA289A63DE00B19FDA /* ObjcRuntime.mm in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 				7D8F3D75289F5AA800BA29C8 /* HostObjectArbitrary.mm in Sources */,

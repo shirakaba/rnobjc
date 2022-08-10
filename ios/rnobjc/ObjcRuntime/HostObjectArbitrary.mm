@@ -1,4 +1,5 @@
 #import "HostObjectArbitrary.h"
+#import "JSIUtils.h"
 #import <objc/runtime.h>
 #import <Foundation/Foundation.h>
 #import <React/RCTBridge+Private.h>
