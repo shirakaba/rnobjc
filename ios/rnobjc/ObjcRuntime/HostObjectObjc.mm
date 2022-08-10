@@ -24,7 +24,6 @@ jsi::Value HostObjectObjc::get(jsi::Runtime& rt, const jsi::PropNameID& propName
   }
   
   if (name == "NSString"){
-    // return jsi::Object::createFromHostObject(rt, std::make_unique<HostObjectArbitrary>((__bridge void *)[NSString class]));
     return jsi::Object::createFromHostObject(rt, std::make_unique<HostObjectArbitrary>((__bridge void *)[[NSString alloc] init]));
   }
   
