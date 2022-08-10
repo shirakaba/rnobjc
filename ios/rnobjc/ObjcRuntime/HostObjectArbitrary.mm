@@ -33,17 +33,23 @@ jsi::Value HostObjectArbitrary::get(jsi::Runtime& rt, const jsi::PropNameID& pro
     return jsi::Value::undefined();
   }
   
+  NSString *stringTag = m_type == HostObjectArbitraryType::CLASS_INSTANCE ?
+    [NSString stringWithFormat: @"HostObjectArbitrary<%@*>", NSStringFromClass([(__bridge NSObject *)m_nativeRef class])] :
+    m_type == HostObjectArbitraryType::CLASS ?
+      [NSString stringWithFormat: @"HostObjectArbitrary<%@>", NSStringFromClass((__bridge Class)m_nativeRef)] :
+      @"HostObjectArbitrary<void *>";
+  
   // If you implement this, it'll be used in preference over .toString().
   if(name == "Symbol.toStringTag"){
-    return jsi::String::createFromAscii(rt, "HostObjectArbitrary");
+     return jsi::String::createFromUtf8(rt, stringTag.UTF8String);
   }
   
   if(name == "Symbol.toPrimitive"){
     return jsi::Function::createFromHostFunction(
       rt,
-      jsi::PropNameID::forAscii(rt, "Symbol.toPrimitive"),
+      jsi::PropNameID::forAscii(rt, name),
       1,
-      [this] (jsi::Runtime& rt, const jsi::Value& thisValue, const jsi::Value* arguments, size_t) -> jsi::Value {
+      [this, stringTag] (jsi::Runtime& rt, const jsi::Value& thisValue, const jsi::Value* arguments, size_t) -> jsi::Value {
         auto hint = arguments[0].asString(rt).utf8(rt);
         if(hint == "number"){
           if(
@@ -65,8 +71,7 @@ jsi::Value HostObjectArbitrary::get(jsi::Runtime& rt, const jsi::PropNameID& pro
             return convertNSStringToJSIString(rt, (__bridge NSString *)m_nativeRef);
           }
         }
-        
-        return jsi::String::createFromAscii(rt, "[object HostObjectArbitrary]");
+        return jsi::String::createFromUtf8(rt, [NSString stringWithFormat: @"[object %@]", stringTag].UTF8String);
       }
     );
   }
@@ -74,12 +79,14 @@ jsi::Value HostObjectArbitrary::get(jsi::Runtime& rt, const jsi::PropNameID& pro
   if(name == "toJSON"){
     return jsi::Function::createFromHostFunction(
       rt,
-      jsi::PropNameID::forAscii(rt, "Symbol.toPrimitive"),
+      jsi::PropNameID::forAscii(rt, name),
       0,
-      [this] (jsi::Runtime& rt, const jsi::Value& thisValue, const jsi::Value* arguments, size_t) -> jsi::Value {
+      [this, stringTag] (jsi::Runtime& rt, const jsi::Value& thisValue, const jsi::Value* arguments, size_t) -> jsi::Value {
         // TODO: support converting enums and structs to JSON.
+        // Types like Function and Symbol actually return undefined here, so I'm
+        // taking liberties here just to improve console.log() output.
         if(m_type != HostObjectArbitraryType::CLASS_INSTANCE){
-          return jsi::Value::undefined();
+          return jsi::String::createFromUtf8(rt, [NSString stringWithFormat: @"[object %@]", stringTag].UTF8String);
         }
         return convertObjCObjectToJSIValue(rt, (__bridge NSObject *)m_nativeRef);
       }
