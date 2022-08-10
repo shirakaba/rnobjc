@@ -28,34 +28,66 @@ HostObjectArbitrary::HostObjectArbitrary(void *nativeRef)
 jsi::Value HostObjectArbitrary::get(jsi::Runtime& rt, const jsi::PropNameID& propName) {
   auto name = propName.utf8(rt);
   
-  if (name == "toString") {
+  // Stub for now. typeof is correctly returning "object", so we're probably fine.
+  if(name == "$$typeof"){
+    return jsi::Value::undefined();
+  }
+  
+  // If you implement this, it'll be used in preference over .toString().
+  if(name == "Symbol.toStringTag"){
+    return jsi::String::createFromAscii(rt, "HostObjectArbitrary");
+  }
+  
+  if(name == "Symbol.toPrimitive"){
     return jsi::Function::createFromHostFunction(
       rt,
-      jsi::PropNameID::forAscii(rt, "toString"),
-      0,
-      [] (jsi::Runtime& rt, const jsi::Value&, const jsi::Value*, size_t) -> jsi::Value {
+      jsi::PropNameID::forAscii(rt, "Symbol.toPrimitive"),
+      1,
+      [this] (jsi::Runtime& rt, const jsi::Value& thisValue, const jsi::Value* arguments, size_t) -> jsi::Value {
+        auto hint = arguments[0].asString(rt).utf8(rt);
+        if(hint == "number"){
+          if(
+             m_type == HostObjectArbitraryType::CLASS_INSTANCE &&
+             [(__bridge NSObject *)m_nativeRef isKindOfClass: [NSNumber class]]
+          ){
+            return convertNSNumberToJSINumber(rt, (__bridge NSNumber *)m_nativeRef);
+          }
+          // I'd prefer to return NaN here, but can't see how..!
+          // Maybe I should return something non-numeric, like null, instead..?
+          return jsi::Value(-1);
+        }
+        
+        if(hint == "string"){
+          if(
+             m_type == HostObjectArbitraryType::CLASS_INSTANCE &&
+             [(__bridge NSObject *)m_nativeRef isKindOfClass: [NSString class]]
+          ){
+            return convertNSStringToJSIString(rt, (__bridge NSString *)m_nativeRef);
+          }
+        }
+        
         return jsi::String::createFromAscii(rt, "[object HostObjectArbitrary]");
       }
     );
   }
   
-  if(name == "$$typeof"){
-    // Handles console.log(hostObjectArbitrary);
-    return jsi::Value::undefined();
-  }
-  
-  if(name == "Symbol.toStringTag"){
-    // Handles: console.log(hostObjectArbitrary.NSString);
-    return jsi::String::createFromAscii(rt, "[object HostObjectArbitrary]");
+  if(name == "toJSON"){
+    return jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt, "Symbol.toPrimitive"),
+      0,
+      [this] (jsi::Runtime& rt, const jsi::Value& thisValue, const jsi::Value* arguments, size_t) -> jsi::Value {
+        // TODO: support converting enums and structs to JSON.
+        if(m_type != HostObjectArbitraryType::CLASS_INSTANCE){
+          return jsi::Value::undefined();
+        }
+        return convertObjCObjectToJSIValue(rt, (__bridge NSObject *)m_nativeRef);
+      }
+    );
   }
   
   if(m_type != HostObjectArbitraryType::CLASS && m_type != HostObjectArbitraryType::CLASS_INSTANCE){
-    // TODO: consider how to support serialisable HostObjects.
-    // Seems like we should allow indexing into enums and structs, but do we
-    // also do all serialisable (NSDictionary, NSArray, NSString, std::string)?
-    // Do we get that for free with NSObject's runtime getter anyway?
-    // Do we auto-marshal totally serialisable objects? I can see it falling
-    // apart for NSDictionary<string, any>, large objects, and
+    // TODO: support indexing into enums and structs.
     return jsi::Value::undefined();
   }
 
@@ -108,7 +140,11 @@ jsi::Function HostObjectArbitrary::invokeMethod(jsi::Runtime &runtime, std::stri
   
   RCTBridge *bridge = [RCTBridge currentBridge];
   auto jsCallInvoker = bridge.jsCallInvoker;
-  NSInvocation *inv = [NSInvocation invocationWithMethodSignature:[clazz instanceMethodSignatureForSelector:sel]];
+  
+  NSMethodSignature *methodSignature = m_type == HostObjectArbitraryType::CLASS ?
+    [clazz methodSignatureForSelector:sel] :
+    [clazz instanceMethodSignatureForSelector:sel];
+  NSInvocation *inv = [NSInvocation invocationWithMethodSignature:methodSignature];
   [inv setSelector:sel];
   [inv setTarget:nativeRef];
   
@@ -152,7 +188,7 @@ jsi::Function HostObjectArbitrary::invokeMethod(jsi::Runtime &runtime, std::stri
     // If the Obj-C method call returned object (class or class instance), wrap
     // it as a HostObjectArbitrary and pass that back to JS.
     if([returnValue isKindOfClass:[NSObject class]]){
-      return jsi::Object::createFromHostObject(runtime, std::make_shared<HostObjectArbitrary>(returnValue));
+      return jsi::Object::createFromHostObject(runtime, std::make_shared<HostObjectArbitrary>((__bridge void *)returnValue));
     }
     
     // Anything else, we treat as if it's serialisable.

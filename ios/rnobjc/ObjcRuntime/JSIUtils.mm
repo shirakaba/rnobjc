@@ -7,7 +7,7 @@
 //  Copyright © 2021 Jamie Birch, mrousavy, and Facebook. All rights reserved.
 //
 // Forked and adjusted from: https://github.com/mrousavy/react-native-vision-camera/blob/5dc8ded62a4cb25971006287b7c634ca0981c5a2/ios/React%20Utils/JSIUtils.mm
-//  ... which itself was forked and adjusted from: https://github.com/facebook/react-native/blob/900210cacc4abca0079e3903781bc223c80c8ac7/ReactCommon/react/nativemodule/core/platform/ios/RCTTurboModule.mm
+//  ... which itself was extracted from private helper functions in RCTTurboModule.mm: https://github.com/facebook/react-native/blob/900210cacc4abca0079e3903781bc223c80c8ac7/ReactCommon/react/nativemodule/core/platform/ios/RCTTurboModule.mm
 //  Original Copyright Notice:
 //
 //  Copyright (c) Facebook, Inc. and its affiliates.
