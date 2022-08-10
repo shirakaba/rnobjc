@@ -66,7 +66,95 @@ const App = () => {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
 
-  React.useEffect(() => console.log('objc:', objc), []);
+  React.useEffect(() => {
+    // console.log('objc:', objc);
+    // console.log('objc.NSString:', objc.NSString);
+    // console.log('objc.NSString.alloc().init():', objc.NSString.alloc().init());
+
+    // Crashing because NSInvocation can only accept Obj-C arguments and all the
+    // constructors for NSNumber require a C number.
+    // console.log(
+    //   "objc.NSNumber.alloc()['initWithInteger:'](123)",
+    //   objc.NSNumber.alloc()['initWithInteger:'](123),
+    // );
+    // console.log(
+    //   "objc.NSNumber['numberWithInteger:'](123)",
+    //   objc.NSNumber['numberWithInteger:'](123),
+    // );
+
+    // objc runtime can't see any allKeys property at all.
+    // console.log(
+    //   'objc.NSDictionary.alloc().init().allKeys',
+    //   objc.NSDictionary.alloc().init().allKeys,
+    // );
+
+    // console.log(objc.NSString.alloc()['initWithString:']('Hello'));
+    // console.log(objc.NSNumber.alloc()['initWithInteger:'](123));
+    // console.log(
+    //   `objc.NSString.alloc().init(): ${objc.NSString.alloc().init()}`,
+    // );
+    // console.log(`typeof objc.NSString: ${typeof objc.NSString}`);
+    // console.log(
+    //   // eslint-disable-next-line no-self-compare
+    //   `objc.NSString === objc.NSString: ${objc.NSString === objc.NSString}`,
+    // );
+    // console.log('Object.keys(objc):', Object.keys(objc));
+
+    const hello = objc.NSString.alloc()['initWithString:']('Hello');
+    const helloWorld = hello['stringByAppendingString:'](', world!');
+    console.log('Concatenate two NSStrings:', helloWorld);
+
+    // console.log(
+    //   'Marshal UTF-8 text back and forth, given "白樺":',
+    //   objc.NSString.alloc()['initWithString:']('白樺'),
+    // );
+
+    // console.log(
+    //   'Get unicode name for each character, given "🐝":',
+    //   objc.NSString.alloc()
+    //     ['initWithString:']('🐝')
+    //     ['stringByApplyingTransform:reverse:']('Name-Any', false),
+    // );
+
+    // // Fun with Foundation String Transforms!
+    // // @see https://nshipster.com/ios9/
+    // // @see https://nshipster.com/cfstringtransform/
+    // // @see https://sites.google.com/site/icuprojectuserguide/transforms/general#TOC-ICU-Transliterators
+    // // @see https://twitter.com/LinguaBrowse/status/1390225265612181505?s=20
+    // console.log(
+    //   'Convert Chinese script from Trad. -> Simp., given "漢字簡化爭論":',
+    //   objc.NSString.alloc()
+    //     ['initWithString:']('漢字簡化爭論')
+    //     ['stringByApplyingTransform:reverse:']('Simplified-Traditional', false),
+    // );
+
+    // console.log(
+    //   'Look up the global variable "NSStringTransformLatinToHiragana" in order to transliterate Japanese Hiragana to Latin, given "しらかば":',
+    //   objc.NSString.alloc()
+    //     ['initWithString:']('しらかば')
+    //     ['stringByApplyingTransform:reverse:'](
+    //       (objc as any).NSStringTransformLatinToHiragana,
+    //       false,
+    //     ),
+    // );
+
+    // console.log(
+    //   'Do the same, this time using the equivalent Core Foundation symbol, "kCFStringTransformToLatin":',
+    //   objc.NSString.alloc()
+    //     ['initWithString:']('しらかば')
+    //     ['stringByApplyingTransform:reverse:'](
+    //       (objc as any).kCFStringTransformToLatin,
+    //       false,
+    //     ),
+    // );
+
+    // console.log(
+    //   'Transliterate Korean Hangul to Latin, given "안녕하세요":',
+    //   objc.NSString.alloc()
+    //     ['initWithString:']('안녕하세요')
+    //     ['stringByApplyingTransform:reverse:']('Latin-Hangul', false),
+    // );
+  }, []);
 
   return (
     <SafeAreaView style={backgroundStyle}>

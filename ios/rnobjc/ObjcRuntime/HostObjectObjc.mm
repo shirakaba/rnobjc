@@ -19,12 +19,15 @@ jsi::Value HostObjectObjc::get(jsi::Runtime& rt, const jsi::PropNameID& propName
     );
   }
   
-  if (name == "NSStringTransformLatinToHiragana"){
-    return jsi::String::createFromUtf8(rt, NSStringTransformLatinToHiragana.UTF8String);
-  }
+//  if (name == "NSStringTransformLatinToHiragana"){
+//    return jsi::String::createFromUtf8(rt, NSStringTransformLatinToHiragana.UTF8String);
+//  }
   
   if (name == "NSString"){
     return jsi::Object::createFromHostObject(rt, std::make_unique<HostObjectArbitrary>((__bridge void *)[NSString class]));
+  }
+  if (name == "NSDictionary"){
+    return jsi::Object::createFromHostObject(rt, std::make_unique<HostObjectArbitrary>((__bridge void *)[NSDictionary class]));
   }
   
   return jsi::Value::undefined();
@@ -33,6 +36,6 @@ jsi::Value HostObjectObjc::get(jsi::Runtime& rt, const jsi::PropNameID& propName
 // Returns the list of keys.
 std::vector<jsi::PropNameID> HostObjectObjc::getPropertyNames(jsi::Runtime& rt) {
   std::vector<jsi::PropNameID> result;
-  result.push_back(jsi::PropNameID::forAscii(rt, "NSStringTransformLatinToHiragana"));
+  // result.push_back(jsi::PropNameID::forAscii(rt, "NSStringTransformLatinToHiragana"));
   return result;
 }
