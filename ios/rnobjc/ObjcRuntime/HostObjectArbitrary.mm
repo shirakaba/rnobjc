@@ -88,11 +88,11 @@ void HostObjectArbitrary::set(jsi::Runtime& runtime, const jsi::PropNameID& prop
 
 jsi::Function HostObjectArbitrary::invokeMethod(jsi::Runtime &runtime, std::string methodName, SEL sel) {
   if(m_type != HostObjectArbitraryType::CLASS && m_type != HostObjectArbitraryType::CLASS_INSTANCE){
-    throw jsi::JSError(runtime, [NSString stringWithFormat:@"Cannot invoke method '%s' a native ref of type '%u'; must be CLASS or CLASS_INSTANCE.", sel_getName(sel), m_type].UTF8String);
+    throw jsi::JSError(runtime, [NSString stringWithFormat:@"Cannot invoke method '%s' a native ref of type '%u'; must be a CLASS or CLASS_INSTANCE.", sel_getName(sel), m_type].UTF8String);
   }
   NSObject *nativeRef = (__bridge NSObject *)m_nativeRef;
   Class clazz = m_type == HostObjectArbitraryType::CLASS ? (Class)nativeRef : [nativeRef class];
-  Method method = HostObjectArbitraryType::CLASS ?
+  Method method = m_type == HostObjectArbitraryType::CLASS ?
     class_getClassMethod(clazz, sel) :
     class_getInstanceMethod(clazz, sel);
   if(!method){
@@ -111,6 +111,7 @@ jsi::Function HostObjectArbitrary::invokeMethod(jsi::Runtime &runtime, std::stri
   unsigned int reservedArgs = 2;
   unsigned int argsCount = method_getNumberOfArguments(method) - reservedArgs;
   auto hostFunction = [reservedArgs, nativeRef, clazz, sel, observedReturnType, inv, jsCallInvoker] (jsi::Runtime& runtime, const jsi::Value& thisValue, const jsi::Value* arguments, size_t count) -> jsi::Value {
+    // For each argument, convert it to a JSI Value, and set it on the NSInvocation.
     for(unsigned int i = 0; i < count; i++){
       if(!arguments[i].isObject()){
         id objcArg = convertJSIValueToObjCObject(runtime, arguments[i], jsCallInvoker);
@@ -118,25 +119,24 @@ jsi::Function HostObjectArbitrary::invokeMethod(jsi::Runtime &runtime, std::stri
         continue;
       }
       
+      jsi::Object obj = arguments[i].asObject(runtime);
       if(!obj.isHostObject((runtime))){
         id objcArg = convertJSIValueToObjCObject(runtime, arguments[i], jsCallInvoker);
         [inv setArgument:&objcArg atIndex: reservedArgs + i];
         continue;
       }
       
-      jsi::Object obj = arguments[i].asObject(runtime);
-      if(HostObjectClass* hostObjectClass = dynamic_cast<HostObjectClass*>(obj.asHostObject(runtime).get())){
-        [inv setArgument:&hostObjectClass->clazz_ atIndex: reservedArgs + i];
-      } else if(HostObjectClassInstance* hostObjectClassInstance = dynamic_cast<HostObjectClassInstance*>(obj.asHostObject(runtime).get())){
-        [inv setArgument:&hostObjectClassInstance->instance_ atIndex: reservedArgs + i];
-      } else {
-        throw jsi::JSError(runtime, "invokeClassInstanceMethod: Unwrapping HostObjects other than ClassHostObject not yet supported!");
+      HostObjectArbitrary* hostObjectArbitrary = dynamic_cast<HostObjectArbitrary*>(obj.asHostObject(runtime).get());
+      if(!hostObjectArbitrary){
+        throw jsi::JSError(runtime, "Got a JSI HostObject as argument, but couldn't cast to HostObjectArbitrary.");
       }
+      
+      [inv setArgument:&hostObjectArbitrary->m_nativeRef atIndex: reservedArgs + i];
     }
     [inv invoke];
     
-    // @see https://developer.apple.com/documentation/foundation/nsmethodsignature
-    const char *voidReturnType = "v";
+    // If the Obj-C method call returned void, then pass undefined back to JS.
+    const char *voidReturnType = "v"; // https://developer.apple.com/documentation/foundation/nsmethodsignature
     if(0 == strncmp(observedReturnType, voidReturnType, strlen(voidReturnType))){
       return jsi::Value::undefined();
     }
@@ -144,15 +144,13 @@ jsi::Function HostObjectArbitrary::invokeMethod(jsi::Runtime &runtime, std::stri
     id returnValue = NULL;
     [inv getReturnValue:&returnValue];
     
-    // isKindOfClass checks whether the returnValue is an instance of any subclass of NSObject or NSObject itself.
-    // There is also isMemberOfClass if we ever want to check whether it is an instance of NSObject (not a subclass).
+    // If the Obj-C method call returned object (class or class instance), wrap
+    // it as a HostObjectArbitrary and pass that back to JS.
     if([returnValue isKindOfClass:[NSObject class]]){
-      return jsi::Object::createFromHostObject(runtime, std::make_shared<HostObjectClassInstance>(returnValue));
+      return jsi::Object::createFromHostObject(runtime, std::make_shared<HostObjectArbitrary>(returnValue));
     }
     
-    // If we get blocked by "Did you forget to nest alloc and init?", we may be restricted to [NSString new].
-    
-    // Boy is this unsafe..!
+    // Anything else, we treat as if it's serialisable.
     return convertObjCObjectToJSIValue(runtime, returnValue);
   };
   return jsi::Function::createFromHostFunction(runtime, jsi::PropNameID::forUtf8(runtime, methodName), argsCount, hostFunction);
