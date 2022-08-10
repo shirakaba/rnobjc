@@ -49,12 +49,7 @@ jsi::Value HostObjectArbitrary::get(jsi::Runtime& rt, const jsi::PropNameID& pro
     return jsi::String::createFromAscii(rt, "[object HostObjectArbitrary]");
   }
   
-  // For HostObjectClassInstance, see instancesRespondToSelector, for looking up instance methods.
-  
-  // Runtime type encodings:
-  // https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Articles/ocrtTypeEncodings.html#//apple_ref/doc/uid/TP40008048-CH100
-  
-  if(m_type != HostObjectArbitraryType::CLASS_INSTANCE){
+  if(m_type != HostObjectArbitraryType::CLASS && m_type != HostObjectArbitraryType::CLASS_INSTANCE){
     // TODO: consider how to support serialisable HostObjects.
     // Seems like we should allow indexing into enums and structs, but do we
     // also do all serialisable (NSDictionary, NSArray, NSString, std::string)?
@@ -63,21 +58,31 @@ jsi::Value HostObjectArbitrary::get(jsi::Runtime& rt, const jsi::PropNameID& pro
     // apart for NSDictionary<string, any>, large objects, and
     return jsi::Value::undefined();
   }
-  
-  SEL sel = NSSelectorFromString([NSString stringWithUTF8String:name.c_str()]);
+
+  // If the accessed propName matches a method name, then return a JSI function
+  // that proxies through to that method.
+  NSString *nameNSString = [NSString stringWithUTF8String:name.c_str()];
+  SEL sel = NSSelectorFromString(nameNSString);
   if([(__bridge NSObject *)m_nativeRef respondsToSelector:sel]){
     return invokeMethod(rt, name, sel);
   }
-//
-//  objc_property_t property = class_getProperty([instance_ class], nameNSString.UTF8String);
-//  if(property){
-//    const char *propertyName = property_getName(property);
-//    if(propertyName){
-//      NSObject* value = [instance_ valueForKey:[NSString stringWithUTF8String:propertyName]];
-//      return convertObjCObjectToJSIValue(runtime, value);
-//    }
-//  }
+
+  // If the accessed propName matches a property name, then get that property,
+  // convert it from an ObjC type into a JSI one, and return that.
+  NSObject *nativeRef = (__bridge NSObject *)m_nativeRef;
+  Class clazz = m_type == HostObjectArbitraryType::CLASS ? (Class)nativeRef : [nativeRef class];
+  objc_property_t property = class_getProperty(clazz, nameNSString.UTF8String);
+  if(property){
+    const char *propertyName = property_getName(property);
+    if(propertyName){
+      NSObject *value = [nativeRef valueForKey:[NSString stringWithUTF8String:propertyName]];
+      return convertObjCObjectToJSIValue(rt, value);
+    }
+  }
   
+  // Technically we could proxy ivars as well, but given we're already proxying
+  // the very same properties that the ivars access, I think it's okay to just
+  // return undefined at this point.
   
   return jsi::Value::undefined();
 }
