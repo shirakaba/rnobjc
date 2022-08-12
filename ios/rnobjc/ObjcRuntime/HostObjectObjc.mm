@@ -9,15 +9,15 @@
 
 HostObjectObjc::HostObjectObjc(void *nativeRef, bool isGlobal): m_nativeRef(nativeRef) {
   if(isGlobal){
-    m_type = HostObjectObjcType::GLOBAL;
+    m_type = GLOBAL;
     return;
   }
   
   @try {
     if([(__bridge NSObject *)m_nativeRef isKindOfClass:[NSObject class]]){
       m_type = class_isMetaClass(object_getClass((__bridge NSObject *)m_nativeRef)) ?
-        HostObjectObjcType::CLASS :
-        HostObjectObjcType::CLASS_INSTANCE;
+        CLASS :
+        CLASS_INSTANCE;
       return;
     }
   }
@@ -25,17 +25,17 @@ HostObjectObjc::HostObjectObjc(void *nativeRef, bool isGlobal): m_nativeRef(nati
     // Handles both ObjC and C++ exceptions as long as it's 64-bit.
   }
   
-  m_type = HostObjectObjcType::OTHER;
+  m_type = OTHER;
 }
 
 jsi::Value HostObjectObjc::get(jsi::Runtime& rt, const jsi::PropNameID& propName) {
   auto name = propName.utf8(rt);
   
   NSString *stringTag;
-  if(m_type == HostObjectObjcType::CLASS){
+  if(m_type == CLASS){
     Class ref = (__bridge Class)m_nativeRef;
     stringTag = [NSString stringWithFormat: @"HostObjectObjc<%@>", NSStringFromClass(ref)];
-  } else if(m_type == HostObjectObjcType::CLASS_INSTANCE){
+  } else if(m_type == CLASS_INSTANCE){
     NSObject *ref = (__bridge NSObject *)m_nativeRef;
     stringTag = [NSString stringWithFormat: @"HostObjectObjc<%@*>", NSStringFromClass([ref class])];
   } else {
@@ -54,19 +54,13 @@ jsi::Value HostObjectObjc::get(jsi::Runtime& rt, const jsi::PropNameID& propName
       1,
       [this, stringTag] (jsi::Runtime& rt, const jsi::Value& thisValue, const jsi::Value* arguments, size_t) -> jsi::Value {
         auto hint = arguments[0].asString(rt).utf8(rt);
-        if(hint == "number"){
-          if(
-             m_type == HostObjectObjcType::CLASS_INSTANCE &&
-             [(__bridge NSObject *)m_nativeRef isKindOfClass: [NSNumber class]]
-          ){
-            return convertNSNumberToJSINumber(rt, (__bridge NSNumber *)m_nativeRef);
-          }
-          // I'd prefer to return NaN here, but can't see how..!
-          // Maybe I should return something non-numeric, like null, instead..?
-          return jsi::Value(-1);
+        if(hint == "number"){ // Handles: console.log(+hostObjectObjc);
+          return m_type == CLASS_INSTANCE && [(__bridge NSObject *)m_nativeRef isKindOfClass: [NSNumber class]] ?
+              convertNSNumberToJSINumber(rt, (__bridge NSNumber *)m_nativeRef) :
+              jsi::Value(-1); // I'd prefer to return NaN here, but can't see how..!
         } else if(hint == "string"){
           if(
-             m_type == HostObjectObjcType::CLASS_INSTANCE &&
+             m_type == CLASS_INSTANCE &&
              [(__bridge NSObject *)m_nativeRef isKindOfClass: [NSString class]]
           ){
             return convertNSStringToJSIString(rt, (__bridge NSString *)m_nativeRef);
@@ -86,7 +80,7 @@ jsi::Value HostObjectObjc::get(jsi::Runtime& rt, const jsi::PropNameID& propName
         // TODO: support converting enums and structs to JSON.
         // Types like Function and Symbol actually return undefined here, so I'm
         // taking liberties here just to improve console.log() output.
-        if(m_type != HostObjectObjcType::CLASS_INSTANCE){
+        if(m_type != CLASS_INSTANCE){
           return jsi::String::createFromUtf8(rt, [NSString stringWithFormat: @"[object %@]", stringTag].UTF8String);
         }
         return convertObjCObjectToJSIValue(rt, (__bridge NSObject *)m_nativeRef);
@@ -94,11 +88,11 @@ jsi::Value HostObjectObjc::get(jsi::Runtime& rt, const jsi::PropNameID& propName
     );
   }
   
-  if(m_type == HostObjectObjcType::OTHER) return jsi::Value::undefined();
+  if(m_type == OTHER) return jsi::Value::undefined();
   
   NSString *nameNSString = [NSString stringWithUTF8String:name.c_str()];
   
-  if(m_type == HostObjectObjcType::GLOBAL){
+  if(m_type == GLOBAL){
     if (Class clazz = NSClassFromString(nameNSString)) {
       return jsi::Object::createFromHostObject(rt, std::make_unique<HostObjectObjc>((__bridge void*)clazz, false));
     } else if (Protocol *protocol = NSProtocolFromString(nameNSString)) {
@@ -135,7 +129,7 @@ jsi::Value HostObjectObjc::get(jsi::Runtime& rt, const jsi::PropNameID& propName
   // If the accessed propName matches a property name, then get that property,
   // convert it from an ObjC type into a JSI one, and return that.
   NSObject *nativeRef = (__bridge NSObject *)m_nativeRef;
-  Class clazz = m_type == HostObjectObjcType::CLASS ? (Class)nativeRef : [nativeRef class];
+  Class clazz = m_type == CLASS ? (Class)nativeRef : [nativeRef class];
   
   objc_property_t property = class_getProperty(clazz, nameNSString.UTF8String);
   if(property){
@@ -158,12 +152,12 @@ void HostObjectObjc::set(jsi::Runtime& runtime, const jsi::PropNameID& propName,
   // ⚠️ Provisional implementation; very likely doesn't work.
   auto name = propName.utf8(runtime);
   NSString *nameNSString = [NSString stringWithUTF8String:name.c_str()];
-  if(m_type != HostObjectObjcType::CLASS && m_type != HostObjectObjcType::CLASS_INSTANCE){
+  if(m_type != CLASS && m_type != CLASS_INSTANCE){
     throw jsi::JSError(runtime, [NSString stringWithFormat:@"Cannot set '%@' a native ref of type '%u'; must be a CLASS or CLASS_INSTANCE.", nameNSString, m_type].UTF8String);
   }
   
   NSObject *nativeRef = (__bridge NSObject *)m_nativeRef;
-  Class clazz = m_type == HostObjectObjcType::CLASS ? (Class)nativeRef : [nativeRef class];
+  Class clazz = m_type == CLASS ? (Class)nativeRef : [nativeRef class];
   
   RCTBridge *bridge = [RCTBridge currentBridge];
   auto jsCallInvoker = bridge.jsCallInvoker;
@@ -197,14 +191,11 @@ std::vector<jsi::PropNameID> HostObjectObjc::getPropertyNames(jsi::Runtime& rt) 
   result.push_back(jsi::PropNameID::forUtf8(rt, std::string("toString")));
   
   NSObject *nativeRef = (__bridge NSObject *)m_nativeRef;
-  Class clazz = m_type == HostObjectObjcType::CLASS ? (Class)nativeRef : [nativeRef class];
+  Class clazz = m_type == CLASS ? (Class)nativeRef : [nativeRef class];
   
   // Copy methods.
   unsigned int methodCount;
-  Method *methodList = class_copyMethodList(
-    m_type == HostObjectObjcType::CLASS ? objc_getMetaClass(class_getName(clazz)) : clazz,
-    &methodCount
-  );
+  Method *methodList = class_copyMethodList(m_type == CLASS ? objc_getMetaClass(class_getName(clazz)) : clazz, &methodCount);
   for(unsigned int i = 0; i < methodCount; i++){
     NSString *selectorNSString = NSStringFromSelector(method_getName(methodList[i]));
     result.push_back(jsi::PropNameID::forUtf8(rt, std::string([selectorNSString UTF8String])));
@@ -212,27 +203,24 @@ std::vector<jsi::PropNameID> HostObjectObjc::getPropertyNames(jsi::Runtime& rt) 
   free(methodList);
   
   // Copy properties. TODO: do the same for subclasses and categories, too.
-  unsigned int propertyCount;
-  objc_property_t _Nonnull *propertyList = class_copyPropertyList(
-    m_type == HostObjectObjcType::CLASS ? objc_getMetaClass(class_getName(clazz)) : clazz,
-    &propertyCount
-  );
-  for(unsigned int i = 0; i < propertyCount; i++){
-    NSString *propertyNSString = [NSString stringWithUTF8String:property_getName(propertyList[i])];
+  unsigned int propCount;
+  objc_property_t *propList = class_copyPropertyList(m_type == CLASS ? objc_getMetaClass(class_getName(clazz)) : clazz, &propCount);
+  for(unsigned int i = 0; i < propCount; i++){
+    NSString *propertyNSString = [NSString stringWithUTF8String:property_getName(propList[i])];
     result.push_back(jsi::PropNameID::forUtf8(rt, std::string([propertyNSString UTF8String])));
   }
-  free(propertyList);
+  free(propList);
   
   return result;
 }
 
 jsi::Function HostObjectObjc::invokeMethod(jsi::Runtime &runtime, std::string methodName, SEL sel) {
-  if(m_type != HostObjectObjcType::CLASS && m_type != HostObjectObjcType::CLASS_INSTANCE){
+  if(m_type != CLASS && m_type != CLASS_INSTANCE){
     throw jsi::JSError(runtime, [NSString stringWithFormat:@"Cannot invoke method '%s' a native ref of type '%u'; must be a CLASS or CLASS_INSTANCE.", sel_getName(sel), m_type].UTF8String);
   }
   NSObject *nativeRef = (__bridge NSObject *)m_nativeRef;
-  Class clazz = m_type == HostObjectObjcType::CLASS ? (Class)nativeRef : [nativeRef class];
-  Method method = m_type == HostObjectObjcType::CLASS ?
+  Class clazz = m_type == CLASS ? (Class)nativeRef : [nativeRef class];
+  Method method = m_type == CLASS ?
     class_getClassMethod(clazz, sel) :
     class_getInstanceMethod(clazz, sel);
   if(!method){
@@ -244,7 +232,7 @@ jsi::Function HostObjectObjc::invokeMethod(jsi::Runtime &runtime, std::string me
   RCTBridge *bridge = [RCTBridge currentBridge];
   auto jsCallInvoker = bridge.jsCallInvoker;
   
-  NSMethodSignature *methodSignature = m_type == HostObjectObjcType::CLASS ?
+  NSMethodSignature *methodSignature = m_type == CLASS ?
     [clazz methodSignatureForSelector:sel] :
     [clazz instanceMethodSignatureForSelector:sel];
   NSInvocation *inv = [NSInvocation invocationWithMethodSignature:methodSignature];
