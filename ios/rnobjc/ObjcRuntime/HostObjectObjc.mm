@@ -1,6 +1,5 @@
 #import "HostObjectObjc.h"
 #import "HostObjectArbitrary.h"
-#import <jsi/jsi.h>
 #import <Foundation/Foundation.h>
 
 // Returns the value for any given property accessed.
