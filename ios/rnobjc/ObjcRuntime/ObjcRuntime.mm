@@ -34,7 +34,7 @@ RCT_EXPORT_MODULE()
   runtime->global().setProperty(
     *runtime,
     "objc",
-    jsi::Object::createFromHostObject(*runtime, std::make_shared<HostObjectObjc>())
+    jsi::Object::createFromHostObject(*runtime, std::make_shared<HostObjectObjc>(NULL, true))
   );
 }
 
