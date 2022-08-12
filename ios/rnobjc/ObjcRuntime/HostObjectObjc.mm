@@ -31,14 +31,14 @@ jsi::Value HostObjectObjc::get(jsi::Runtime& rt, const jsi::PropNameID& propName
   auto name = propName.utf8(rt);
   
   NSString *stringTag;
-  if(m_type == HostObjectObjcType::CLASS_INSTANCE){
-    NSObject *ref = (__bridge NSObject *)m_nativeRef;
-    stringTag = [NSString stringWithFormat: @"HostObjectObjc<%@*>", NSStringFromClass([ref class])];
-  } else if(m_type == HostObjectObjcType::CLASS){
+  if(m_type == HostObjectObjcType::CLASS){
     Class ref = (__bridge Class)m_nativeRef;
     stringTag = [NSString stringWithFormat: @"HostObjectObjc<%@>", NSStringFromClass(ref)];
+  } else if(m_type == HostObjectObjcType::CLASS_INSTANCE){
+    NSObject *ref = (__bridge NSObject *)m_nativeRef;
+    stringTag = [NSString stringWithFormat: @"HostObjectObjc<%@*>", NSStringFromClass([ref class])];
   } else {
-    stringTag = @"HostObjectObjc<void *>";
+    stringTag = @"HostObjectObjc<void*>";
   }
   
   // If you implement this, it'll be used in preference over .toString().
@@ -93,18 +93,14 @@ jsi::Value HostObjectObjc::get(jsi::Runtime& rt, const jsi::PropNameID& propName
     );
   }
   
-  if(m_type == HostObjectObjcType::OTHER){
-    return jsi::Value::undefined();
-  }
+  if(m_type == HostObjectObjcType::OTHER) return jsi::Value::undefined();
   
   NSString *nameNSString = [NSString stringWithUTF8String:name.c_str()];
   
   if(m_type == HostObjectObjcType::GLOBAL){
     if (Class clazz = NSClassFromString(nameNSString)) {
       return jsi::Object::createFromHostObject(rt, std::make_shared<HostObjectObjc>(clazz, false));
-    }
-    
-    if (Protocol *protocol = NSProtocolFromString(nameNSString)) {
+    } else if (Protocol *protocol = NSProtocolFromString(nameNSString)) {
       return jsi::Object::createFromHostObject(rt, std::make_shared<HostObjectObjc>(protocol, false));
     }
     
@@ -123,15 +119,9 @@ jsi::Value HostObjectObjc::get(jsi::Runtime& rt, const jsi::PropNameID& propName
     // FIXME: if it's not Obj-C object, we're going to crash either upon this
     // typecast or upon sending the isKindOfClass message to it. I'm not sure
     // how best to write the error-handling.
-    id valueObjc = *((__unsafe_unretained id*)value);
+    void* valueDereferenced = *((void**)value);
     
-    // isKindOfClass checks whether valueObjc is an instance of any subclass of
-    // NSObject or NSObject itself.
-    if(![valueObjc isKindOfClass:[NSObject class]]){
-      throw jsi::JSError(rt, [NSString stringWithFormat:@"TypeError: Did find the symbol named '%@', but it's not a type we can currently handle (expected a class instance).", nameNSString].UTF8String);
-    }
-    
-    return jsi::Object::createFromHostObject(rt, std::make_shared<HostObjectObjc>(valueObjc, false));
+    return jsi::Object::createFromHostObject(rt, std::make_shared<HostObjectObjc>(valueDereferenced, false));
   }
   
   // If the accessed propName matches a method name, then return a JSI function
