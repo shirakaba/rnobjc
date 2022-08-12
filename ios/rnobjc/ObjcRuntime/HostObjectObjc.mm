@@ -100,9 +100,9 @@ jsi::Value HostObjectObjc::get(jsi::Runtime& rt, const jsi::PropNameID& propName
   
   if(m_type == HostObjectObjcType::GLOBAL){
     if (Class clazz = NSClassFromString(nameNSString)) {
-      return jsi::Object::createFromHostObject(rt, std::make_shared<HostObjectObjc>((__bridge void*)clazz, false));
+      return jsi::Object::createFromHostObject(rt, std::make_unique<HostObjectObjc>((__bridge void*)clazz, false));
     } else if (Protocol *protocol = NSProtocolFromString(nameNSString)) {
-      return jsi::Object::createFromHostObject(rt, std::make_shared<HostObjectObjc>((__bridge void*)protocol, false));
+      return jsi::Object::createFromHostObject(rt, std::make_unique<HostObjectObjc>((__bridge void*)protocol, false));
     }
     
     void *value = dlsym(RTLD_MAIN_ONLY, nameNSString.UTF8String);
@@ -122,7 +122,7 @@ jsi::Value HostObjectObjc::get(jsi::Runtime& rt, const jsi::PropNameID& propName
     // how best to write the error-handling.
     void* valueDereferenced = *((void**)value);
     
-    return jsi::Object::createFromHostObject(rt, std::make_shared<HostObjectObjc>(valueDereferenced, false));
+    return jsi::Object::createFromHostObject(rt, std::make_unique<HostObjectObjc>(valueDereferenced, false));
   }
   
   // If the accessed propName matches a method name, then return a JSI function
@@ -291,7 +291,7 @@ jsi::Function HostObjectObjc::invokeMethod(jsi::Runtime &runtime, std::string me
     // If the Obj-C method call returned object (class or class instance), wrap
     // it as a HostObjectArbitrary and pass that back to JS.
     if([returnValue isKindOfClass:[NSObject class]]){
-      return jsi::Object::createFromHostObject(runtime, std::make_shared<HostObjectObjc>((__bridge void *)returnValue, false));
+      return jsi::Object::createFromHostObject(runtime, std::make_unique<HostObjectObjc>((__bridge void *)returnValue, false));
     }
     
     // Anything else, we treat as if it's serialisable.

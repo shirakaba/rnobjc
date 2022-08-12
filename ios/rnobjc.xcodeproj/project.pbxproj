@@ -14,12 +14,8 @@
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		7699B88040F8A987B510C191 /* libPods-rnobjc-rnobjcTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 19F6CBCC0A4E27FBF8BF4A61 /* libPods-rnobjc-rnobjcTests.a */; };
 		7D3208C628A33F130014A885 /* JSIUtils.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7D3208C428A33F130014A885 /* JSIUtils.mm */; };
-		7D4FF14928A481200001C07F /* HostObjectClassInstance.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7D4FF14628A481200001C07F /* HostObjectClassInstance.mm */; };
-		7D4FF14A28A481200001C07F /* HostObjectClass.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7D4FF14728A481200001C07F /* HostObjectClass.mm */; };
 		7D85ADAA289A63DE00B19FDA /* ObjcRuntime.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7D85ADA9289A63DE00B19FDA /* ObjcRuntime.mm */; };
 		7D85ADAD289A65E000B19FDA /* HostObjectObjc.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7D85ADAB289A65E000B19FDA /* HostObjectObjc.mm */; };
-		7D8F3D75289F5AA800BA29C8 /* HostObjectArbitrary.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7D8F3D74289F5AA800BA29C8 /* HostObjectArbitrary.mm */; };
-		7DA8D1F128A5E0A700B1F884 /* HostObjectNSString.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7DA8D1EF28A5E0A700B1F884 /* HostObjectNSString.mm */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 /* End PBXBuildFile section */
 
@@ -50,18 +46,10 @@
 		5DCACB8F33CDC322A6C60F78 /* libPods-rnobjc.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-rnobjc.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7D3208C428A33F130014A885 /* JSIUtils.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = JSIUtils.mm; sourceTree = "<group>"; };
 		7D3208C528A33F130014A885 /* JSIUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSIUtils.h; sourceTree = "<group>"; };
-		7D4FF14528A481200001C07F /* HostObjectClassInstance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HostObjectClassInstance.h; sourceTree = "<group>"; };
-		7D4FF14628A481200001C07F /* HostObjectClassInstance.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = HostObjectClassInstance.mm; sourceTree = "<group>"; };
-		7D4FF14728A481200001C07F /* HostObjectClass.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = HostObjectClass.mm; sourceTree = "<group>"; };
-		7D4FF14828A481200001C07F /* HostObjectClass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HostObjectClass.h; sourceTree = "<group>"; };
 		7D85ADA8289A63DE00B19FDA /* ObjcRuntime.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ObjcRuntime.h; sourceTree = "<group>"; };
 		7D85ADA9289A63DE00B19FDA /* ObjcRuntime.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ObjcRuntime.mm; sourceTree = "<group>"; };
 		7D85ADAB289A65E000B19FDA /* HostObjectObjc.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = HostObjectObjc.mm; sourceTree = "<group>"; };
 		7D85ADAC289A65E000B19FDA /* HostObjectObjc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HostObjectObjc.h; sourceTree = "<group>"; };
-		7D8F3D73289F5AA800BA29C8 /* HostObjectArbitrary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HostObjectArbitrary.h; sourceTree = "<group>"; };
-		7D8F3D74289F5AA800BA29C8 /* HostObjectArbitrary.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = HostObjectArbitrary.mm; sourceTree = "<group>"; };
-		7DA8D1EF28A5E0A700B1F884 /* HostObjectNSString.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = HostObjectNSString.mm; sourceTree = "<group>"; };
-		7DA8D1F028A5E0A700B1F884 /* HostObjectNSString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HostObjectNSString.h; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = rnobjc/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		89C6BE57DB24E9ADA2F236DE /* Pods-rnobjc-rnobjcTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-rnobjc-rnobjcTests.release.xcconfig"; path = "Target Support Files/Pods-rnobjc-rnobjcTests/Pods-rnobjc-rnobjcTests.release.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
@@ -131,16 +119,8 @@
 		7D85ADA7289A63DE00B19FDA /* ObjcRuntime */ = {
 			isa = PBXGroup;
 			children = (
-				7DA8D1F028A5E0A700B1F884 /* HostObjectNSString.h */,
-				7DA8D1EF28A5E0A700B1F884 /* HostObjectNSString.mm */,
 				7D3208C528A33F130014A885 /* JSIUtils.h */,
 				7D3208C428A33F130014A885 /* JSIUtils.mm */,
-				7D8F3D73289F5AA800BA29C8 /* HostObjectArbitrary.h */,
-				7D8F3D74289F5AA800BA29C8 /* HostObjectArbitrary.mm */,
-				7D4FF14828A481200001C07F /* HostObjectClass.h */,
-				7D4FF14728A481200001C07F /* HostObjectClass.mm */,
-				7D4FF14528A481200001C07F /* HostObjectClassInstance.h */,
-				7D4FF14628A481200001C07F /* HostObjectClassInstance.mm */,
 				7D85ADAC289A65E000B19FDA /* HostObjectObjc.h */,
 				7D85ADAB289A65E000B19FDA /* HostObjectObjc.mm */,
 				7D85ADA8289A63DE00B19FDA /* ObjcRuntime.h */,
@@ -456,15 +436,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7D4FF14928A481200001C07F /* HostObjectClassInstance.mm in Sources */,
 				7D85ADAD289A65E000B19FDA /* HostObjectObjc.mm in Sources */,
-				7DA8D1F128A5E0A700B1F884 /* HostObjectNSString.mm in Sources */,
 				13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */,
 				7D3208C628A33F130014A885 /* JSIUtils.mm in Sources */,
 				7D85ADAA289A63DE00B19FDA /* ObjcRuntime.mm in Sources */,
-				7D4FF14A28A481200001C07F /* HostObjectClass.mm in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
-				7D8F3D75289F5AA800BA29C8 /* HostObjectArbitrary.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
