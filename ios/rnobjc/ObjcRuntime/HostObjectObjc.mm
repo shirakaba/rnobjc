@@ -100,9 +100,9 @@ jsi::Value HostObjectObjc::get(jsi::Runtime& rt, const jsi::PropNameID& propName
   
   if(m_type == HostObjectObjcType::GLOBAL){
     if (Class clazz = NSClassFromString(nameNSString)) {
-      return jsi::Object::createFromHostObject(rt, std::make_shared<HostObjectObjc>(clazz, false));
+      return jsi::Object::createFromHostObject(rt, std::make_shared<HostObjectObjc>((__bridge void*)clazz, false));
     } else if (Protocol *protocol = NSProtocolFromString(nameNSString)) {
-      return jsi::Object::createFromHostObject(rt, std::make_shared<HostObjectObjc>(protocol, false));
+      return jsi::Object::createFromHostObject(rt, std::make_shared<HostObjectObjc>((__bridge void*)protocol, false));
     }
     
     void *value = dlsym(RTLD_MAIN_ONLY, nameNSString.UTF8String);
