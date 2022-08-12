@@ -34,80 +34,69 @@ jsi::Value HostObjectArbitrary::get(jsi::Runtime& rt, const jsi::PropNameID& pro
   }
   
   NSString *stringTag;
-  
-  // FIXME: check whether storing a strongly-typed pointer at construction time,
-  // rather than repeatedly using bridge casts, would solve all this.
-  // We almost certainly want a strong ref, too, otherwise it could be released
-  // the moment we leave the scope of the invokeMethod callback.
   if(m_type == HostObjectArbitraryType::CLASS_INSTANCE){
     NSObject *ref = (__bridge NSObject *)m_nativeRef;
-    NSString *str = NSStringFromClass([ref class]);
-    stringTag = [NSString stringWithFormat: @"HostObjectArbitrary<%@*>", str];
-  } else {
+    stringTag = [NSString stringWithFormat: @"HostObjectArbitrary<%@*>", NSStringFromClass([ref class])];
+  } else if(m_type == HostObjectArbitraryType::CLASS){
     Class ref = (__bridge Class)m_nativeRef;
-    NSString *str = NSStringFromClass(ref);
-    stringTag = [NSString stringWithFormat: @"HostObjectArbitrary<%@>", str];
+    stringTag = [NSString stringWithFormat: @"HostObjectArbitrary<%@>", NSStringFromClass(ref)];
+  } else {
+    stringTag = @"HostObjectArbitrary<void *>";
   }
   
-//  NSString *stringTag = m_type == HostObjectArbitraryType::CLASS_INSTANCE ?
-//    [NSString stringWithFormat: @"HostObjectArbitrary<%@*>", NSStringFromClass([(__bridge NSObject *)m_nativeRef class])] :
-//    m_type == HostObjectArbitraryType::CLASS ?
-//      [NSString stringWithFormat: @"HostObjectArbitrary<%@>", NSStringFromClass((__bridge Class)m_nativeRef)] :
-//      @"HostObjectArbitrary<void *>";
-  
-//  // If you implement this, it'll be used in preference over .toString().
-//  if(name == "Symbol.toStringTag"){
-//     return jsi::String::createFromUtf8(rt, stringTag.UTF8String);
-//  }
-//
-//  if(name == "Symbol.toPrimitive"){
-//    return jsi::Function::createFromHostFunction(
-//      rt,
-//      jsi::PropNameID::forAscii(rt, name),
-//      1,
-//      [this, stringTag] (jsi::Runtime& rt, const jsi::Value& thisValue, const jsi::Value* arguments, size_t) -> jsi::Value {
-//        auto hint = arguments[0].asString(rt).utf8(rt);
-//        if(hint == "number"){
-//          if(
-//             m_type == HostObjectArbitraryType::CLASS_INSTANCE &&
-//             [(__bridge NSObject *)m_nativeRef isKindOfClass: [NSNumber class]]
-//          ){
-//            return convertNSNumberToJSINumber(rt, (__bridge NSNumber *)m_nativeRef);
-//          }
-//          // I'd prefer to return NaN here, but can't see how..!
-//          // Maybe I should return something non-numeric, like null, instead..?
-//          return jsi::Value(-1);
-//        }
-//
-//        if(hint == "string"){
-//          if(
-//             m_type == HostObjectArbitraryType::CLASS_INSTANCE &&
-//             [(__bridge NSObject *)m_nativeRef isKindOfClass: [NSString class]]
-//          ){
-//            return convertNSStringToJSIString(rt, (__bridge NSString *)m_nativeRef);
-//          }
-//        }
-//        return jsi::String::createFromUtf8(rt, [NSString stringWithFormat: @"[object %@]", stringTag].UTF8String);
-//      }
-//    );
-//  }
-//
-//  if(name == "toJSON"){
-//    return jsi::Function::createFromHostFunction(
-//      rt,
-//      jsi::PropNameID::forAscii(rt, name),
-//      0,
-//      [this, stringTag] (jsi::Runtime& rt, const jsi::Value& thisValue, const jsi::Value* arguments, size_t) -> jsi::Value {
-//        // TODO: support converting enums and structs to JSON.
-//        // Types like Function and Symbol actually return undefined here, so I'm
-//        // taking liberties here just to improve console.log() output.
-//        if(m_type != HostObjectArbitraryType::CLASS_INSTANCE){
-//          return jsi::String::createFromUtf8(rt, [NSString stringWithFormat: @"[object %@]", stringTag].UTF8String);
-//        }
-//        return convertObjCObjectToJSIValue(rt, (__bridge NSObject *)m_nativeRef);
-//      }
-//    );
-//  }
+  // If you implement this, it'll be used in preference over .toString().
+  if(name == "Symbol.toStringTag"){
+     return jsi::String::createFromUtf8(rt, stringTag.UTF8String);
+  }
+
+  if(name == "Symbol.toPrimitive"){
+    return jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt, name),
+      1,
+      [this, stringTag] (jsi::Runtime& rt, const jsi::Value& thisValue, const jsi::Value* arguments, size_t) -> jsi::Value {
+        auto hint = arguments[0].asString(rt).utf8(rt);
+        if(hint == "number"){
+          if(
+             m_type == HostObjectArbitraryType::CLASS_INSTANCE &&
+             [(__bridge NSObject *)m_nativeRef isKindOfClass: [NSNumber class]]
+          ){
+            return convertNSNumberToJSINumber(rt, (__bridge NSNumber *)m_nativeRef);
+          }
+          // I'd prefer to return NaN here, but can't see how..!
+          // Maybe I should return something non-numeric, like null, instead..?
+          return jsi::Value(-1);
+        }
+
+        if(hint == "string"){
+          if(
+             m_type == HostObjectArbitraryType::CLASS_INSTANCE &&
+             [(__bridge NSObject *)m_nativeRef isKindOfClass: [NSString class]]
+          ){
+            return convertNSStringToJSIString(rt, (__bridge NSString *)m_nativeRef);
+          }
+        }
+        return jsi::String::createFromUtf8(rt, [NSString stringWithFormat: @"[object %@]", stringTag].UTF8String);
+      }
+    );
+  }
+
+  if(name == "toJSON"){
+    return jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt, name),
+      0,
+      [this, stringTag] (jsi::Runtime& rt, const jsi::Value& thisValue, const jsi::Value* arguments, size_t) -> jsi::Value {
+        // TODO: support converting enums and structs to JSON.
+        // Types like Function and Symbol actually return undefined here, so I'm
+        // taking liberties here just to improve console.log() output.
+        if(m_type != HostObjectArbitraryType::CLASS_INSTANCE){
+          return jsi::String::createFromUtf8(rt, [NSString stringWithFormat: @"[object %@]", stringTag].UTF8String);
+        }
+        return convertObjCObjectToJSIValue(rt, (__bridge NSObject *)m_nativeRef);
+      }
+    );
+  }
   
   if(m_type != HostObjectArbitraryType::CLASS && m_type != HostObjectArbitraryType::CLASS_INSTANCE){
     // TODO: support indexing into enums and structs.
