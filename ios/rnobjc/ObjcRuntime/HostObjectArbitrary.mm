@@ -126,20 +126,6 @@ jsi::Value HostObjectArbitrary::get(jsi::Runtime& rt, const jsi::PropNameID& pro
   // convert it from an ObjC type into a JSI one, and return that.
   NSObject *nativeRef = (__bridge NSObject *)m_nativeRef;
   Class clazz = m_type == HostObjectArbitraryType::CLASS ? (Class)nativeRef : [nativeRef class];
-//  unsigned int outCount;
-//  objc_property_t *properties = class_copyPropertyList(clazz, &outCount);
-//  NSMutableArray  *arr        = [NSMutableArray array];
-//
-//  for(unsigned int i = 0; i < outCount; i++) {
-//      objc_property_t property  = properties[i];
-//      const char      *propName = property_getName(property);
-//      if(propName) {
-//
-//          NSString *propertyName = [NSString stringWithCString:propName encoding:NSUTF8StringEncoding];
-//          [arr addObject:propertyName];
-//      }
-//  }
-//  free(properties);
   
   objc_property_t property = class_getProperty(clazz, nameNSString.UTF8String);
   if(property){
