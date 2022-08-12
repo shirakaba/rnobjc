@@ -1,6 +1,7 @@
 #import "HostObjectObjc.h"
 #import "JSIUtils.h"
 #import <objc/runtime.h>
+#import <objc/message.h>
 #import <Foundation/Foundation.h>
 #import <React/RCTBridge+Private.h>
 #import <ReactCommon/RCTTurboModule.h>
@@ -154,6 +155,40 @@ jsi::Value HostObjectObjc::get(jsi::Runtime& rt, const jsi::PropNameID& propName
 
 void HostObjectObjc::set(jsi::Runtime& runtime, const jsi::PropNameID& propName, const jsi::Value& value) {
   // 1️⃣1️⃣ For CLASS and CLASS_INSTANCE only: if the name matches a property, marshal the incoming value and set it.
+  // ⚠️ Provisional implementation; very likely doesn't work.
+  auto name = propName.utf8(runtime);
+  NSString *nameNSString = [NSString stringWithUTF8String:name.c_str()];
+  if(m_type != HostObjectObjcType::CLASS && m_type != HostObjectObjcType::CLASS_INSTANCE){
+    throw jsi::JSError(runtime, [NSString stringWithFormat:@"Cannot set '%@' a native ref of type '%u'; must be a CLASS or CLASS_INSTANCE.", nameNSString, m_type].UTF8String);
+  }
+  
+  NSObject *nativeRef = (__bridge NSObject *)m_nativeRef;
+  Class clazz = m_type == HostObjectObjcType::CLASS ? (Class)nativeRef : [nativeRef class];
+  
+  RCTBridge *bridge = [RCTBridge currentBridge];
+  auto jsCallInvoker = bridge.jsCallInvoker;
+  
+  void* marshalled;
+  if(value.isObject()){
+    jsi::Object obj = value.asObject(runtime);
+    if(obj.isHostObject((runtime))){
+      if(HostObjectObjc* ho = dynamic_cast<HostObjectObjc*>(obj.asHostObject(runtime).get())){
+        marshalled = ho->m_nativeRef;
+      } else {
+        throw jsi::JSError(runtime, "Unwrapping HostObjects other than HostObjectObjc not yet supported!");
+      }
+    } else {
+      marshalled = (__bridge void *)convertJSIValueToObjCObject(runtime, value, jsCallInvoker);
+    }
+  } else {
+    marshalled = (__bridge void *)convertJSIValueToObjCObject(runtime, value, jsCallInvoker);
+  }
+  
+  objc_property_t property = class_getProperty(clazz, nameNSString.UTF8String);
+  const char *propertyName = property_getName(property);
+  NSString *setterSelectorName = [NSString stringWithFormat:@"set%@:", [NSString stringWithCString:propertyName encoding:NSUTF8StringEncoding].capitalizedString];
+  SEL setterSelector = NSSelectorFromString(setterSelectorName);
+  ((void (*)(id, SEL, void*))objc_msgSend)(clazz, setterSelector, marshalled);
 }
 
 std::vector<jsi::PropNameID> HostObjectObjc::getPropertyNames(jsi::Runtime& rt) {
