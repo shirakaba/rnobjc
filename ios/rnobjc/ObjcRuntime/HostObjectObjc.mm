@@ -57,7 +57,7 @@ jsi::Value HostObjectObjc::get(jsi::Runtime& rt, const jsi::PropNameID& propName
         if(hint == "number"){ // Handles: console.log(+hostObjectObjc);
           return m_type == CLASS_INSTANCE && [(__bridge NSObject *)m_nativeRef isKindOfClass: [NSNumber class]] ?
               convertNSNumberToJSINumber(rt, (__bridge NSNumber *)m_nativeRef) :
-              jsi::Value(-1); // I'd prefer to return NaN here, but can't see how..!
+              jsi::String::createFromAscii(rt, "If you return a string for the ‘number’ hint, it becomes NaN!");
         } else if(hint == "string"){
           if(
              m_type == CLASS_INSTANCE &&
