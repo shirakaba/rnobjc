@@ -7,7 +7,7 @@ using namespace facebook;
 
 @implementation ObjcRuntime
 
-@synthesize bridge = _bridge;
+@synthesize bridge = m_bridge;
 
 RCT_EXPORT_MODULE()
 
@@ -18,10 +18,10 @@ RCT_EXPORT_MODULE()
 // The installation lifecycle
 - (void)setBridge:(RCTBridge *)bridge {
   // Store the bridge so that we can access it later in the `invalidate` method.
-  _bridge = bridge;
+  m_bridge = bridge;
   
   // Grab the JSI runtime.
-  RCTCxxBridge *cxxBridge = (RCTCxxBridge *)self.bridge;
+  RCTCxxBridge *cxxBridge = (RCTCxxBridge *)m_bridge;
   jsi::Runtime *runtime = (jsi::Runtime *)cxxBridge.runtime;
   if (!runtime) {
     return;
@@ -41,7 +41,7 @@ RCT_EXPORT_MODULE()
 // The cleanup lifecycle
 - (void)invalidate {
   // Grab the JSI runtime.
-  RCTCxxBridge *cxxBridge = (RCTCxxBridge *)self.bridge;
+  RCTCxxBridge *cxxBridge = (RCTCxxBridge *)m_bridge;
   jsi::Runtime *runtime = (jsi::Runtime *)cxxBridge.runtime;
   if (!runtime) {
     return;
