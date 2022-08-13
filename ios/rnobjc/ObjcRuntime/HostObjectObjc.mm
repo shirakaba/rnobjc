@@ -186,16 +186,15 @@ void HostObjectObjc::set(jsi::Runtime& runtime, const jsi::PropNameID& propName,
 }
 
 std::vector<jsi::PropNameID> HostObjectObjc::getPropertyNames(jsi::Runtime& rt) {
-  // 1️⃣2️⃣ Return the name for every case that we handle in the get() method above.
+  // 9️⃣ Return the name for every case that we handle in the get() method above.
   std::vector<jsi::PropNameID> result;
-  result.push_back(jsi::PropNameID::forUtf8(rt, std::string("toString")));
   
   NSObject *nativeRef = (__bridge NSObject *)m_nativeRef;
-  Class clazz = m_type == CLASS ? (Class)nativeRef : [nativeRef class];
+  Class clazz = m_type == CLASS ? objc_getMetaClass(class_getName((Class)nativeRef)) : [nativeRef class];
   
   // Copy methods.
   unsigned int methodCount;
-  Method *methodList = class_copyMethodList(m_type == CLASS ? objc_getMetaClass(class_getName(clazz)) : clazz, &methodCount);
+  Method *methodList = class_copyMethodList(clazz, &methodCount);
   for(unsigned int i = 0; i < methodCount; i++){
     NSString *selectorNSString = NSStringFromSelector(method_getName(methodList[i]));
     result.push_back(jsi::PropNameID::forUtf8(rt, std::string([selectorNSString UTF8String])));
@@ -204,7 +203,7 @@ std::vector<jsi::PropNameID> HostObjectObjc::getPropertyNames(jsi::Runtime& rt) 
   
   // Copy properties. TODO: do the same for subclasses and categories, too.
   unsigned int propCount;
-  objc_property_t *propList = class_copyPropertyList(m_type == CLASS ? objc_getMetaClass(class_getName(clazz)) : clazz, &propCount);
+  objc_property_t *propList = class_copyPropertyList(clazz, &propCount);
   for(unsigned int i = 0; i < propCount; i++){
     NSString *propertyNSString = [NSString stringWithUTF8String:property_getName(propList[i])];
     result.push_back(jsi::PropNameID::forUtf8(rt, std::string([propertyNSString UTF8String])));
