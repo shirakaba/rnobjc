@@ -196,8 +196,7 @@ std::vector<jsi::PropNameID> HostObjectObjc::getPropertyNames(jsi::Runtime& rt) 
   unsigned int methodCount;
   Method *methodList = class_copyMethodList(clazz, &methodCount);
   for(unsigned int i = 0; i < methodCount; i++){
-    NSString *selectorNSString = NSStringFromSelector(method_getName(methodList[i]));
-    result.push_back(jsi::PropNameID::forUtf8(rt, std::string([selectorNSString UTF8String])));
+    result.push_back(jsi::PropNameID::forUtf8(rt, NSStringFromSelector(method_getName(methodList[i])).UTF8String));
   }
   free(methodList);
   
@@ -205,8 +204,7 @@ std::vector<jsi::PropNameID> HostObjectObjc::getPropertyNames(jsi::Runtime& rt) 
   unsigned int propCount;
   objc_property_t *propList = class_copyPropertyList(clazz, &propCount);
   for(unsigned int i = 0; i < propCount; i++){
-    NSString *propertyNSString = [NSString stringWithUTF8String:property_getName(propList[i])];
-    result.push_back(jsi::PropNameID::forUtf8(rt, std::string([propertyNSString UTF8String])));
+    result.push_back(jsi::PropNameID::forUtf8(rt, property_getName(propList[i])));
   }
   free(propList);
   
